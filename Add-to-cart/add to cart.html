@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart Product</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        .body {
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+        }
+
+        .card-img-top {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cart-button {
+            float: right;
+            margin: 12px 15px 0 0;
+            position: relative;
+        }
+
+        .cart-qty {
+            background: #ff5252;
+            border-radius: 50%;
+            color: #fff;
+            display: block;
+            font-size: 0.8em;
+            line-height: 17px;
+            position: absolute;
+            text-align: center;
+            top: 11px;
+            right: 10px;
+            height: 17px;
+            width: 17px;
+        }
+
+        .qty-block {
+            margin-top: 20px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+        <h2 class="text-center fw-bold">Add Cart</h2>
+    </div>
+    <header class="bg-dark bg-gradient container d-flex justify-content-between align-items-center p-2 mt-4">
+        <h3 class="text-light">coffee lounge</h3>
+        <div class="cart-button">
+            <a href="cart.html" class="text-light"><i class="fa-solid fa-cart-shopping"></i></a>
+            <span class="cart-qty" id="cart-count">0</span>
+        </div>
+    </header>
+    <div class="container">
+        <div class="row" id="products">
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <script>
+        let products = [
+            {
+                id: 1,
+                name: "Bowl of ice cream with chocolate",
+                price: 180,
+                image: "https://www.foodiesfeed.com/wp-content/uploads/2023/10/bowl-of-ice-cream-with-chocolate.jpg"
+            },
+            {
+                id: 2,
+                name: "Cold Brew Tonic",
+                price: 230,
+                image: "https://coffeelounge.delonghi.com/wp-content/uploads/2020/05/CL_ricette_16CB@2x-scaled.jpg"
+            },
+            {
+                id: 3,
+                name: "Xiaolongbao dumplings",
+                price: 210,
+                image: "https://www.foodiesfeed.com/wp-content/uploads/2023/06/xiaolongbao-dumplings.jpg"
+            },
+            {
+                id: 4,
+                name: "Noodles with chicken and broccoli",
+                price: 300,
+                image: "https://www.foodiesfeed.com/wp-content/uploads/2023/06/noodles-with-chicken-and-broccoli.jpg"
+            },
+            {
+                id: 5,
+                name: "Burger with melted cheese",
+                price: 120,
+                image: "https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg"
+            },
+            {
+                id: 6,
+                name: "Mocha latte",
+                price: 120,
+                image: "https://i0.wp.com/owlbbaking.com/wp-content/uploads/2022/11/mocha-latte-recipe-Featured-Photo-Template.png?fit=1200%2C1200&ssl=1"
+            },
+            {
+                id: 7,
+                name: "Boiled eggs on a plate",
+                price: 50,
+                image: "https://www.foodiesfeed.com/wp-content/uploads/2023/06/boiled-eggs-on-a-plate.jpg"
+            },
+            {
+                id: 8,
+                name: "Veg Pizza",
+                price: 350,
+                image: "https://th.bing.com/th/id/OIP.vqhc5wWlBRt5b--JWqBY-gHaE7?rs=1&pid=ImgDetMain"
+            },
+        ];
+
+        function addProducts() {
+            let row = "";
+            products.map((val) => {
+                row += `
+                    <div class="card col-3 mt-5">
+                        <img src="${val.image}" class="card-img-top img-fluid" alt="${val.name}">
+                        <div class="card-body">
+                            <h5 class="card-title">${val.name}</h5>
+                            <p class="card-text">$${val.price}</p>
+                            <button class="btn btn-primary bg-dark border-0" onclick="addCart(${val.id})">Add Cart</button>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById("products").innerHTML = row;
+        }
+        addProducts();
+
+        function updateQuantity(productId, action) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+            let item = cart.find(p => p.id === productId);
+            if (item) {
+                if (action === "increase") {
+                    item.quantity += 1;
+                } else if (action === "decrease" && item.quantity > 1) {
+                    item.quantity -= 1;
+                }
+                localStorage.setItem("cart", JSON.stringify(cart));
+                renderCart();
+                updateCartCount();
+            }
+        }
+
+        function addCart(id) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+            let item = products.find(p => p.id === id);
+            if (!item) return;
+
+            if (!cart.some(p => p.id === id)) {
+                item.quantity = 1; 
+                cart.push(item);
+                localStorage.setItem("cart", JSON.stringify(cart));
+                // alert(`${item.name} added to cart.`);
+            } else {
+                alert(`${item.name} is already in the cart.`);
+            }
+            updateCartCount();
+        }
+
+        function updateCartCount() {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            let totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById("cart-count").textContent = totalItems;
+        }
+
+        updateCartCount();
+    </script>
+
+</body>
+
+</html>
+
